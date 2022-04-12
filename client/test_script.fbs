@@ -1,5 +1,5 @@
 keypress x
-kesypress [SPACE]
+keypress [SPACE]
 keypress d
 exec putty
 sleep 3000

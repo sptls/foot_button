@@ -1,7 +1,9 @@
+#include "footbutton.h"
+
 #if defined(__linux__)
 
-#include "linux_tty.h"
 
+//Linux specific
 FB::FB()
 {
     tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
@@ -46,7 +48,6 @@ int FB::OpenPort(std::string port_path)
 char FB::Read()
 {
     char out = 'x';
-    //memset(&out, '\0', sizeof(out));
     int bytes_read = read(port, &out, sizeof(out));
     if(bytes_read < 0)
     {
@@ -60,9 +61,68 @@ char FB::Read()
     return out;
 };
 
+#else
+
+//Windows specific
+
+FB::FB()
+{
+    dcbSerialParams.BaudRate=CBR_9600;
+    dcbSerialParams.ByteSize=8;
+    dcbSerialParams.StopBits=ONESTOPBIT;
+    dcbSerialParams.Parity=NOPARITY;
+
+    comTimeout.ReadIntervalTimeout=2000;
+    comTimeout.ReadTotalTimeoutConstant=2000;
+    comTimeout.ReadTotalTimeoutMultiplier=2000;
+    comTimeout.WriteTotalTimeoutConstant=2000;
+    comTimeout.WriteTotalTimeoutMultiplier=2000;
+}
+
+int FB::OpenPort(std::string port_path)
+{
+    serialHandle = CreateFile(port_path.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+    if(serialHandle == INVALID_HANDLE_VALUE)
+    {
+        printf("Failed to open port - port %s doesn't exist\n", port_path.c_str());
+        return 1;
+    }
+
+    if(!SetCommState(serialHandle, &dcbSerialParams))
+    {
+        printf("Failed to set params for handle\n");
+        return 1;
+    }
+
+    if(!SetCommTimeouts(serialHandle, &comTimeout))
+    {
+        printf("Failed to set handle timeouts\n");
+        return 1;
+    }
+
+    return 0;
+};
+
+char FB::Read()
+{
+    char out = 'x';
+    DWORD bytes_read = 0;
+    if(!ReadFile(serialHandle, &out, 1, &bytes_read, NULL))
+    {
+        printf("Failed reading from COM port\n");
+        return 'x';
+    }
+    if(bytes_read == 0)
+        out = lastChar;
+    else
+        lastChar = out;
+    return out;
+};
+
 void FB::ClosePort()
 {
-    close(port);
-};
+    CloseHandle(serialHandle);
+}
 
 #endif

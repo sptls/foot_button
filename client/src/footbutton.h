@@ -12,7 +12,7 @@
     #include <unistd.h>
 #else
     #include <windows.h>
-    //windows headers
+#endif
 
 class FB
 {
@@ -34,5 +34,4 @@ class FB
         void ClosePort();
 };
 
-#endif
 #endif

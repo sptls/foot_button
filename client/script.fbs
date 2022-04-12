@@ -1,0 +1,7 @@
+keypress x
+kesypress [SPACE]
+keypress d
+exec putty
+sleep 3000
+keypress x
+keypress d

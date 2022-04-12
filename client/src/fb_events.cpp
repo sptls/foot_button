@@ -1,6 +1,10 @@
 #include "fb_events.h"
+#include <cstdlib>
 
 #if defined(__linux__)
+#include <unistd.h>
+
+#define FB_SLEEP(x) usleep(x*1000)
 
 FBEvents::FBEvents()
 {
@@ -9,7 +13,7 @@ FBEvents::FBEvents()
 
 int FBEvents::FBKeyPress(int key_code)
 {
-    keycode = XKeysymToKeycode(display, key_code);
+    unsigned int keycode = XKeysymToKeycode(display, key_code);
     XTestFakeKeyEvent(display, keycode, True, 0);
     XTestFakeKeyEvent(display, keycode, False, 0);
     XFlush(display);
@@ -19,6 +23,7 @@ int FBEvents::FBKeyPress(int key_code)
 #else
 
 //Windows stuff
+#define FB_SLEEP(x) Sleep(x)
 
 FBEvents::FBEvents()
 {
@@ -54,9 +59,15 @@ int FBEvents::RunScript(std::string script)
     for(int i = 0; i < script.length(); i++)
     {
         std::string line;
-        for(int j = i; script[j] != '\n'; j++)
-            line.push_back(script[j]);
-        i += line.length();
+        int k = i;
+        for(; script[k] != '\n' && k < script.length(); k++)
+        {
+            if(script[k] == ' ' && line.length() == 0)
+                continue;
+            else
+                line.push_back(script[k]);
+        }
+        i = k;
 
         std::string cmd, arg;
         for(int j = 0; line[j] != ' '; j++)
@@ -72,15 +83,15 @@ int FBEvents::RunScript(std::string script)
 
 int FBEvents::ExecCommand(std::string command, std::string arg)
 {
-    int execResult;
-
-    printf("cmd: %s\n", command.c_str());
-    printf("arg: %s\n", arg.c_str());
-
     if(command == "keypress")
     {
-        printf("FBKeyPress(%i)", fbP.keymap[arg]);
-        return FBKeyPress(fbP.keymap[arg]);
+        if(fbP.keymap.find(arg) != fbP.keymap.end())
+            return FBKeyPress(fbP.keymap[arg]);
+        else
+        {
+            printf("Failed to press %s\n", arg.c_str());
+            return -1;
+        }
     }
     if(command == "keydown")
     {
@@ -92,11 +103,18 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     }
     if(command == "sleep")
     {
-        return 1;
+        FB_SLEEP(atoi(arg.c_str()));
     }
     if(command == "exec")
     {
-        return 1;
+        arg += " &";
+        std::system(arg.c_str());
+        /*
+        CreateProcess()
+        or
+        execl()
+        for Windows
+        */
     }
     if(command == "movemouse")
     {

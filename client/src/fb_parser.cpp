@@ -17,14 +17,29 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
 {
     for(int i = 0; i < fullScript.length(); i++)
     {
-        std::string tmp;
+        std::string tmp = "";
         lineNr++;
-        for(int j = i; fullScript[j] != '\n'; j++)
-            tmp.push_back(fullScript[j]);
-        i += tmp.length();
+        int k = i;
+        //copy script text to new buffer until new line or eof reached
+        for(; fullScript[k] != '\n' && k < fullScript.length(); k++)
+        {
+            if(fullScript[k] == ' ' && tmp.length() == 0)
+                continue;
+            else
+                tmp.push_back(fullScript[k]);
+        }
+        i = k;
+
+        //copy command to new buffer, check if it's valid and does it have any arguments
         std::string tmpCommand = "";
         for(int j = 0; j < tmp.length(); j++)
         {
+            if(j == tmp.length() - 1)
+            {
+                columnNr = j;
+                *errMsg = "No arguments provided";
+                return -1;
+            }
             if(tmp[j] != ' ')
                 tmpCommand.push_back(tmp[j]);
             else
@@ -43,6 +58,41 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
             *errMsg += tmpCommand.c_str();
             *errMsg += "\"";
             return -1;
+        }
+
+        //check if commands have correct amount of arguments and check if arguments are correct
+        if(tmpCommand == "keypress")
+        {
+            int countSpaces = 0;
+            for(int s = 0; s < tmp.length(); s++)
+            {
+                if(tmp[s] == ' ')
+                    countSpaces++;
+                if(countSpaces > 1)
+                {
+                    columnNr = s;
+                    *errMsg = "Too many arguments or spaces for this command";
+                    return -1;
+                }
+            }
+
+            std::string checkArg = "";
+            for(int s = tmpCommand.length(); s < tmp.length() && tmp[s] != '\n'; s++)
+            {
+                if(tmp[s] == ' ')
+                    continue;
+                else
+                    checkArg.push_back(tmp[s]);
+            }
+            if(keymap.find(checkArg) == keymap.end())
+            {
+                columnNr = tmpCommand.length();
+                *errMsg = "Key value: \"";
+                *errMsg += checkArg;
+                *errMsg += "\" is invalid";
+                return -1;
+            }
+
         }
     }
 

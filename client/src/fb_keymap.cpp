@@ -15,13 +15,13 @@ void FBParser::LoadKeymap()
     keymap["[RIGHT]"] = 0xff53;
     keymap["[SPACE]"] = 0x0020;
 
-    std::string numbers = "0123456789";
-    for(int i = 0, keyValue = 0x0030; i < numbers.length(); i++, keyValue++)
+    char c = '!';
+    for(int i = 0x0021; i <= 0x007c; i++, c++)
     {
-        std::string tmp = "" + numbers[i];
-        keymap[tmp] = keyValue;
+        std::string tmp = "";
+        tmp += c;
+        keymap[tmp] = i;
     }
-
 };
 
 #else

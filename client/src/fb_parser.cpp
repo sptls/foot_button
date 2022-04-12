@@ -92,7 +92,6 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
                 *errMsg += "\" is invalid";
                 return -1;
             }
-
         }
     }
 

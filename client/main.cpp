@@ -36,6 +36,7 @@ int main(int argc, char** argv)
     FB fb;
     FBParser fbP;
     FBEvents fbE;
+
     std::string script = GetScriptFromFile(argv[2]);
     int lineNr = 0, columnNr = 0, result = 0;
     fbP.LoadScript(script);
@@ -54,9 +55,8 @@ int main(int argc, char** argv)
         printf("Failed opening port %s", argv[1]);
         return -1;
     }
-    
 
-    printf("open port ok\n");
+    printf("Opening port %s SUCCESS\n", argv[1]);
     char out = '0';
     while(1)
     {

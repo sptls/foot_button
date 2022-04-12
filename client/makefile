@@ -3,15 +3,15 @@ LINUX_LIBS=-lX11 -lXtst
 LINUX_FLAGS=
 WIN_LIBS=
 WIN_FLAGS=
+UNAME=$(shell uname)
 
 all:
-	@echo "make linux/windows"
-
-linux:
-	@echo -n "Compiling... "
+	@echo -n "Compiling for "
+ifeq ($(UNAME), Linux)
+	@echo -n "Linux... "
 	@${CXX} -o fb *.cpp src/*.cpp ${LINUX_LIBS} ${LINUX_FLAGS}
-	@echo "done"
-windows:
-	@echo -n "Compiling... "
+else
+	@echo -n "Windows... "
 	@${CXX} -o fb *.cpp src/*.cpp ${WIN_LIBS} ${WIN_FLAGS}
+endif
 	@echo "done"

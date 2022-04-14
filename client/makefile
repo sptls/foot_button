@@ -12,6 +12,6 @@ ifeq ($(UNAME), Linux)
 	@${CXX} -o fb *.cpp src/*.cpp ${LINUX_LIBS} ${LINUX_FLAGS}
 else
 	@echo -n "Windows... "
-	@${CXX} -o fb.exe *.cpp src/*.cpp ${WIN_LIBS} ${WIN_FLAGS}
+	@${CXX} -o fb.exe *.cpp src/*.cpp ${WIN_LIBS} ${WIN_FLAGS} -static-libstdc++ -static-libgcc -static
 endif
 	@echo "done"

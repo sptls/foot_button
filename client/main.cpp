@@ -63,6 +63,7 @@ int main(int argc, char** argv)
     char out = '0';
     while(1)
     {
+        FB_SLEEP(1);
         out = fb.Read();
         if(out == '1')
             fbE.RunScript(script);

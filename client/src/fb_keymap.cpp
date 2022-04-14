@@ -28,6 +28,11 @@ void FBParser::LoadKeymap()
 
 void FBParser::LoadKeymap()
 {
+    //mouse
+    keymap["[LMB]"] = 0x0002;
+    keymap["[RMB]"] = 0x0008;
+    //keymap["[MMB]"] = 0x04;
+    //kb
     keymap["[ENTER]"] = 0x0d;
     keymap["[BACKSPACE]"] = 0x08;
     keymap["[ESCAPE]"] = 0x1b;
@@ -38,10 +43,39 @@ void FBParser::LoadKeymap()
     keymap["[LEFT]"] = 0x25;
     keymap["[RIGHT]"] = 0x27;
     keymap["[SPACE]"] = 0x20;
+    keymap[" "] = 0x20;
+    //if no shift specified press left one
+    keymap["[SHIFT]"] = 0xA0;
+    keymap["[LSHIFT]"] = 0xA0;
+    keymap["[RSHIFT]"] = 0xA1;
+    //if no Ctrl specified press left one
+    keymap["[CTRL]"] = 0xA2;
+    keymap["[LCTRL]"] = 0xA2;
+    keymap["[RCTRL]"] = 0xA3;
+    keymap["[WIN]"] = 0x5b;
+    
+    std::string tmp = "";
     for(char i = 'A'; i <= 'Z'; i++)
-        keymap[std::to_string(i)] = i;
+    {
+        tmp.clear();
+        tmp += i;
+        keymap[tmp] = i;
+    }
+    //    keymap[std::to_string(i)] = i;
     for(char i = '0'; i <= '9'; i++)
-        keymap[std::to_string(i)] = i;
+    {
+        tmp.clear();
+        tmp += i;
+        keymap[tmp] = i;
+    }
+
+    //F1-F12
+    for(int i = 0x70, f = 1; i < 0x7c; i++, f++)
+    {
+        tmp.clear();
+        tmp += 'F' + std::to_string(f);
+        keymap[tmp] = i;
+    }
 };
 
 #endif

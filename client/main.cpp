@@ -47,6 +47,9 @@ int main(int argc, char** argv)
         printf("%i, %i: %s\n", line, row, errMsg.c_str());
         return 0;
     }
+    //testrun
+    fbE.RunScript(script);
+    //test
 
     int openResult;
     openResult = fb.OpenPort(argv[1]);

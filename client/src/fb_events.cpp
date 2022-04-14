@@ -11,7 +11,7 @@ FBEvents::FBEvents()
     display = XOpenDisplay(NULL);
 };
 
-int FBEvents::FBKeyPress(int key_code)
+int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
 {
     unsigned int keycode = XKeysymToKeycode(display, key_code);
     XTestFakeKeyEvent(display, keycode, True, 0);
@@ -30,22 +30,76 @@ FBEvents::FBEvents()
 
 };
 
-int FBEvents::FBKeyPress(int key_code)
+int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
 {
-    INPUT inputs[2] = {};
-    ZeroMemory(inputs, sizeof(inputs));
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = key_code;
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = VK_RETURN;
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    UINT result = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    if(result != ARRAYSIZE(inputs))
+    //key_code lest than 4 is mostly mouse related
+    if(input_source == FB_INPUT_KB)
     {
-        printf("Keypress failed\n");
-        return -1;
+        /*
+        INPUT inputs[2] = {};
+        ZeroMemory(inputs, sizeof(inputs));
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = key_code;
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = key_code;
+        */
+
+        UINT result;
+        INPUT input;
+        switch(input_type)
+        {
+            case FB_PRESS:
+                ZeroMemory(&input, sizeof(input));
+                input.type = INPUT_KEYBOARD;
+                input.ki.wVk = key_code;
+                result = SendInput(1, &input, sizeof(INPUT));
+                break;
+            case FB_RELEASE:
+                ZeroMemory(&input, sizeof(input));
+                input.type = INPUT_KEYBOARD;
+                input.ki.wVk = key_code;
+                input.ki.dwFlags = KEYEVENTF_KEYUP;
+                result = SendInput(1, &input, sizeof(INPUT));
+                break;
+            case FB_TAP:
+                INPUT inputs[2] = {};
+                ZeroMemory(inputs, sizeof(inputs));
+                inputs[0].type = INPUT_KEYBOARD;
+                inputs[0].ki.wVk = key_code;
+                inputs[1].type = INPUT_KEYBOARD;
+                inputs[1].ki.wVk = key_code;
+                inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+                result = SendInput(1, inputs, sizeof(INPUT));
+                break;
+        }
+
+        //UINT result = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+/*
+        if(result != ARRAYSIZE(inputs))
+        {
+            printf("Keypress failed\n");
+            return -1;
+        }
+*/
+    }
+    else
+    {
+        INPUT inputs[2] = {};
+        ZeroMemory(inputs, sizeof(inputs));
+        inputs[0].type = INPUT_MOUSE;
+        inputs[0].mi.dwFlags = key_code;
+        inputs[1].type = INPUT_MOUSE;
+        //inputs[1].mi.wVk = key_code;
+        inputs[1].mi.dwFlags = key_code + 2;
+
+        UINT result = SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+        if(result != ARRAYSIZE(inputs))
+        {
+            printf("Keypress failed\n");
+            return -1;
+        }
     }
 
     return 0;
@@ -76,7 +130,10 @@ int FBEvents::RunScript(std::string script)
             arg.push_back(line[j]);
 
         if(ExecCommand(cmd, arg) != 0)
+        {
+            printf("ExecCommand failed, cmd: %s, arg: %s\n", cmd.c_str(), arg.c_str());
             return 1;
+        }
     }
     return 0;
 };
@@ -86,7 +143,14 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     if(command == "keypress")
     {
         if(fbP.keymap.find(arg) != fbP.keymap.end())
-            return FBKeyPress(fbP.keymap[arg]);
+        {
+            const int FB_MOUSE_BUTTONS = 3;
+            std::string mouseButtons[] = {"[LMB]", "[RMB]", "[MMB]"};
+            for(int i = 0; i < FB_MOUSE_BUTTONS; i++)
+                if(arg == mouseButtons[i])
+                    return FBKeyPress(fbP.keymap[arg], FB_TAP, FB_INPUT_MOUSE);
+            return FBKeyPress(fbP.keymap[arg], FB_TAP, FB_INPUT_KB);
+        }
         else
         {
             printf("Failed to press %s\n", arg.c_str());
@@ -95,11 +159,23 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     }
     if(command == "keydown")
     {
-        return 1;
+        if(fbP.keymap.find(arg) != fbP.keymap.end())
+            return FBKeyPress(fbP.keymap[arg], FB_PRESS, FB_INPUT_KB);
+        else
+        {
+            printf("Failed to press %s\n", arg.c_str());
+            return -1;
+        }
     }
     if(command == "keyup")
     {
-        return 1;
+        if(fbP.keymap.find(arg) != fbP.keymap.end())
+            return FBKeyPress(fbP.keymap[arg], FB_RELEASE, FB_INPUT_KB);
+        else
+        {
+            printf("Failed to press %s\n", arg.c_str());
+            return -1;
+        }
     }
     if(command == "sleep")
     {
@@ -119,6 +195,29 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     if(command == "movemouse")
     {
         return 1;
+    }
+    if(command == "type")
+    {
+        int result = 0;
+        std::string tmp;
+        for(int i = 0; i < arg.length(); i++)
+        {
+            tmp.clear();
+            tmp += arg[i];
+            if(fbP.keymap.find(tmp) == fbP.keymap.end())
+            {
+                printf("KBKP failed for %s\n", tmp.c_str());
+                return -1;
+            }
+            result = FBKeyPress(fbP.keymap[tmp], FB_TAP, FB_INPUT_KB);
+            //FB_SLEEP(1);
+            if(result)
+            {
+                printf("FBKP in \"type\" failed at %i char %s", i, tmp.c_str());
+                return -1;
+            }
+        }
+        return 0;
     }
 
     return 0;

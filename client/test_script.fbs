@@ -1,7 +1,6 @@
-keypress x
-keypress [SPACE]
-keypress d
-exec putty
 sleep 3000
-keypress x
-keypress d
+keypress [LMB]
+sleep 1000
+type SSSSSSSSSADFHSA FDGLKDFJG DFGJDSFG DSFGSDFGDFGDS SFDGDFGSDFGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 
+sleep 2000
+keypress [ENTER]

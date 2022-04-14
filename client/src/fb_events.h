@@ -12,6 +12,19 @@
 #include <stdio.h>
 #include "fb_parser.h"
 
+enum FB_INPUT_TYPE
+{
+    FB_TAP,
+    FB_PRESS,
+    FB_RELEASE
+};
+
+enum FB_INPUT_SOURCE
+{
+    FB_INPUT_MOUSE,
+    FB_INPUT_KB
+};
+
 class FBEvents
 {
     public:
@@ -20,7 +33,7 @@ class FBEvents
     #endif
         FBParser        fbP;
         FBEvents();
-        int FBKeyPress(int key_code);
+        int FBKeyPress(int key_code, int input_type, int input_source);
         int RunScript(std::string script);
         int ExecCommand(std::string command, std::string arg);
 };

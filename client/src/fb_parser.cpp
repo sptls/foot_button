@@ -36,7 +36,7 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
         {
             if(j == tmp.length() - 1)
             {
-                columnNr = j;
+                columnNr = j + 1;
                 *errMsg = "No arguments provided";
                 return -1;
             }
@@ -46,14 +46,14 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
                 break;
         }
         bool bValidCommand = false;
-        for(int j = 0; j < 6; j++)
+        for(int j = 0; j < FB_NUMBER_OF_KEYWORDS; j++)
         {
             if(tmpCommand == keywords[j])
                 bValidCommand = true;
         }
         if(!bValidCommand)
         {
-            columnNr = 0;
+            columnNr = 1;
             *errMsg = "Unknow command \"";
             *errMsg += tmpCommand.c_str();
             *errMsg += "\"";
@@ -70,7 +70,7 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
                     countSpaces++;
                 if(countSpaces > 1)
                 {
-                    columnNr = s;
+                    columnNr = s + 1;
                     *errMsg = "Too many arguments or spaces for this command";
                     return -1;
                 }
@@ -86,10 +86,11 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
             }
             if(keymap.find(checkArg) == keymap.end())
             {
-                columnNr = tmpCommand.length();
+                columnNr = tmpCommand.length() + 1;
                 *errMsg = "Key value: \"";
                 *errMsg += checkArg;
                 *errMsg += "\" is invalid";
+                printf("checkArg.length() = %i\n", checkArg.length());
                 return -1;
             }
         }

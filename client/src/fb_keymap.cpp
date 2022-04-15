@@ -53,6 +53,7 @@ void FBParser::LoadKeymap()
     keymap["[LCTRL]"] = 0xA2;
     keymap["[RCTRL]"] = 0xA3;
     keymap["[WIN]"] = 0x5b;
+    keymap["[ALT]"] = 0x12;
     
     std::string tmp = "";
     for(char i = 'A', s = 'a'; i <= 'Z'; s++, i++)

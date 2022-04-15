@@ -29,16 +29,16 @@ enum FB_INPUT_SOURCE
 
 class FBEvents
 {
-    public:
-    #if defined(__linux__)
-        Display*        display;
-    #endif
+        #if defined(__linux__)
+            Display*        display;
+        #endif
         FBParser        fbP;
-        FBEvents();
         int             typeDelay = 0;
         int FBKeyPress(int key_code, int input_type, int input_source);
-        int RunScript(std::string script);
         int ExecCommand(std::string command, std::string arg);
+    public:
+        FBEvents();
+        int RunScript(std::string script);
 };
 
 #endif

@@ -182,14 +182,18 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     }
     if(command == "exec")
     {
-        arg += " &";
-        std::system(arg.c_str());
-        /*
+        #if defined(__linux__)
+            arg += " &";
+            std::system(arg.c_str());
+        #else
+        ShellExecuteA(NULL, NULL, arg.c_str(), NULL, NULL, SW_NORMAL);
+        /*k
         CreateProcess()
         or
         execl()
         for Windows
         */
+        #endif
     }
     if(command == "movemouse")
     {

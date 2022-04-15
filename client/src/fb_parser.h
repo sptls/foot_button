@@ -3,7 +3,12 @@
 #include <string>
 #include <map>
 
-#define FB_NUMBER_OF_KEYWORDS 7
+#ifndef FB_FAILED
+#define FB_FAILED 1
+#define FB_OK 0
+#endif
+
+#define FB_NUMBER_OF_KEYWORDS 8
 
 class FBParser
 {
@@ -13,7 +18,7 @@ class FBParser
 
         std::map<std::string, int> keymap;
 
-        std::string keywords[FB_NUMBER_OF_KEYWORDS] = {"keypress", "keydown", "keyup", "sleep", "exec", "movemouse", "type"};
+        std::string keywords[FB_NUMBER_OF_KEYWORDS] = {"keypress", "keydown", "keyup", "sleep", "exec", "movemouse", "type", "typedelay"};
         std::string fullScript;
 
         int LoadScript(std::string script);

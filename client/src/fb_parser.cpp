@@ -1,6 +1,7 @@
 #include "fb_parser.h"
 #include <stdio.h>
-#include <iostream>
+#include <string>
+#include <vector>
 
 FBParser::FBParser()
 {
@@ -38,7 +39,7 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
             {
                 columnNr = j + 1;
                 *errMsg = "No arguments provided";
-                return -1;
+                return FB_FAILED;
             }
             if(tmp[j] != ' ')
                 tmpCommand.push_back(tmp[j]);
@@ -59,42 +60,98 @@ int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string *errMsg)
             *errMsg += "\"";
             return -1;
         }
+        std::vector<std::string> argList;
+        std::string tmpArg;
+        for(int i = tmpCommand.length(); i <= tmp.length(); i++)
+        {
+            if(tmp[i] == ' ' || tmp[i] == '\n' || i == tmp.length())
+            {
+                if(tmpArg.length() > 0)
+                {
+                    argList.push_back(tmpArg);
+                    tmpArg.clear();
+                }
+                continue;
+            }
+            else
+                tmpArg.push_back(tmp[i]);
+        }
+
 
         //check if commands have correct amount of arguments and check if arguments are correct
-        if(tmpCommand == "keypress")
+        if(tmpCommand == "keypress" || tmpCommand == "keyup" || tmpCommand == "keydown")
         {
-            int countSpaces = 0;
-            for(int s = 0; s < tmp.length(); s++)
+            if(argList.size() > 1)
             {
-                if(tmp[s] == ' ')
-                    countSpaces++;
-                if(countSpaces > 1)
+                columnNr = 0;
+                *errMsg = "Too many arguments for \"";
+                *errMsg += tmpCommand;
+                *errMsg += "\", expected 1, provided ";
+                *errMsg += std::to_string(argList.size());
+                return FB_FAILED;
+            }
+            else
+            {
+                if(keymap.find(argList[0]) == keymap.end())
                 {
-                    columnNr = s + 1;
-                    *errMsg = "Too many arguments or spaces for this command";
-                    return -1;
+                    columnNr = tmp.find(argList[0]) + 1;
+                    *errMsg = "Key \"";
+                    *errMsg += argList[0];
+                    *errMsg += "\" for function \"";
+                    *errMsg += tmpCommand;
+                    *errMsg += "\" not found!";
+                    return FB_FAILED;
+                }
+
+            }
+        }
+        if(tmpCommand == "sleep")
+        {
+            if(argList.size() > 1)
+            {
+                columnNr = tmp.find(argList[1]);
+                *errMsg = "Too many arguments for \"";
+                *errMsg += tmpCommand;
+                *errMsg += "\", expected 1, provided ";
+                *errMsg += std::to_string(argList.size());
+                return FB_FAILED;
+            }
+            for(int i = 0; i < argList[0].length(); i++)
+            {
+                if(!(isdigit(argList[0][i])))
+                {
+                    columnNr = tmp.find(argList[0]);
+                    *errMsg = "Argument for \"";
+                    *errMsg += tmpCommand;
+                    *errMsg += "\", is not digit: \"";
+                    *errMsg += argList[0];
+                    *errMsg += "\"";
+                    return FB_FAILED;
                 }
             }
-
-            std::string checkArg = "";
-            for(int s = tmpCommand.length(); s < tmp.length() && tmp[s] != '\n'; s++)
+            if(argList[0].length() > 9)
             {
-                if(tmp[s] == ' ')
-                    continue;
-                else
-                    checkArg.push_back(tmp[s]);
+                columnNr = tmp.find(argList[0]);
+                *errMsg = "Value for \"";
+                *errMsg += tmpCommand;
+                *errMsg += "\" is too big. Max value is 999999999, provided: ";
+                *errMsg += argList[0];
+                return FB_FAILED;
             }
-            if(keymap.find(checkArg) == keymap.end())
+        }
+        if(tmpCommand == "movemouse")
+        {
+            if(argList.size() != 2)
             {
-                columnNr = tmpCommand.length() + 1;
-                *errMsg = "Key value: \"";
-                *errMsg += checkArg;
-                *errMsg += "\" is invalid";
-                printf("checkArg.length() = %i\n", checkArg.length());
-                return -1;
+                columnNr = tmp.find(argList[0]);
+                *errMsg = "Incorrect number of arguments for \"";
+                *errMsg += tmpCommand;
+                *errMsg += "\", expected 2, provided ";
+                *errMsg += atoi(argList.size().c_str());
+                return FB_FAILED;
             }
         }
     }
 
-    return 0;
+    return FB_OK;
 };

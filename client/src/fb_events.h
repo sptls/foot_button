@@ -10,6 +10,8 @@
 #endif
 
 #include <stdio.h>
+#include <string>
+#include <vector>
 #include "fb_parser.h"
 
 enum FB_INPUT_TYPE

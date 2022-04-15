@@ -1,5 +1,6 @@
 keypress D
-keypress U
-keypress P
-keypress A
-keypress [SPACE]
+keypress S
+sleep 999999999 
+keydown [CTRLd[]]
+keypress X
+keyup [CTRL]

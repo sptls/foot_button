@@ -28,9 +28,12 @@ std::string GetScriptFromFile(char* filepath)
 
 int main(int argc, char** argv)
 {
-    std::string port;
-    std::ifstream fPort;
-    std::string script;
+    std::string         port;
+    std::ifstream       fPort;
+    std::string         script;
+    FB                  fb;
+    FBParser            fbP;
+    FBEvents            fbE;
 
     fPort.open("last_working_port");
     if(fPort.is_open())
@@ -43,7 +46,6 @@ int main(int argc, char** argv)
         if(argc < 2)
         {
             printf("Too few arguments\n");
-FB_SLEEP(5000);
             return 1;
         }
         port = argv[1];
@@ -51,14 +53,10 @@ FB_SLEEP(5000);
     }
     else
         script = GetScriptFromFile(argv[1]);
-    FB fb;
-    FBParser fbP;
-    FBEvents fbE;
 
     if(script == "")
     {
         printf("Script file %s is empty!\n", argv[2]);
-FB_SLEEP(5000);
         return -1;
     }
     int lineNr = 0, columnNr = 0, result = 0;
@@ -68,11 +66,11 @@ FB_SLEEP(5000);
     if(fbP.CheckErrors(line, row, &errMsg) != 0)
     {
         printf("%i, %i: %s\n", line, row, errMsg.c_str());
-FB_SLEEP(5000);
         return 0;
     }
     //testrun
-    //fbE.RunScript(script);
+fbE.RunScript(script);
+return 0;
     //test
 
     int openResult;

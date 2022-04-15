@@ -92,6 +92,7 @@ int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
 
 int FBEvents::RunScript(std::string script)
 {
+    typeDelay = 0;
     for(int i = 0; i < script.length(); i++)
     {
         std::string line;
@@ -192,7 +193,7 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     }
     if(command == "movemouse")
     {
-        return 1;
+        return FB_OK;
     }
     if(command == "type")
     {
@@ -207,16 +208,29 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
                 printf("FBKP failed for %s\n", tmp.c_str());
                 return -1;
             }
-            result = FBKeyPress(fbP.keymap[tmp], FB_TAP, FB_INPUT_KB);
-            //FB_SLEEP(1);
+            if(tmp[0] >= 'A' && tmp[0] <= 'Z')
+            {
+                result = FBKeyPress(fbP.keymap["[SHIFT]"], FB_PRESS, FB_INPUT_KB);
+                result = FBKeyPress(fbP.keymap[tmp], FB_TAP, FB_INPUT_KB);
+                result = FBKeyPress(fbP.keymap["[SHIFT]"], FB_RELEASE, FB_INPUT_KB);
+            }
+            else
+                result = FBKeyPress(fbP.keymap[tmp], FB_TAP, FB_INPUT_KB);
+            if(typeDelay)
+                FB_SLEEP(typeDelay);
             if(result)
             {
                 printf("FBKP in \"type\" failed at %i char %s", i, tmp.c_str());
                 return -1;
             }
         }
-        return 0;
+        return FB_OK;
+    }
+    if(command == "typedelay")
+    {
+        typeDelay = atoi(argList[0].c_str());
+        return FB_OK;
     }
 
-    return 0;
+    return FB_OK;
 };

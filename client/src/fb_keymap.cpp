@@ -55,10 +55,13 @@ void FBParser::LoadKeymap()
     keymap["[WIN]"] = 0x5b;
     
     std::string tmp = "";
-    for(char i = 'A'; i <= 'Z'; i++)
+    for(char i = 'A', s = 'a'; i <= 'Z'; s++, i++)
     {
         tmp.clear();
         tmp += i;
+        keymap[tmp] = i;
+        tmp.clear();
+        tmp += s;
         keymap[tmp] = i;
     }
     //    keymap[std::to_string(i)] = i;
@@ -74,6 +77,22 @@ void FBParser::LoadKeymap()
     {
         tmp.clear();
         tmp += 'F' + std::to_string(f);
+        keymap[tmp] = i;
+    }
+
+    //other keys
+    std::string otherKeys = ";=,-./`";
+    for(int i = 0xba, x = 0; i < 0xc0; x++, i++)
+    {
+        tmp.clear();
+        tmp += otherKeys[x];
+        keymap[tmp] = i;
+    }
+    otherKeys = "[\\]'";
+    for(int i = 0xdb, x = 0; i < 0xdf; x++, i++)
+    {
+        tmp.clear();
+        tmp += otherKeys[x];
         keymap[tmp] = i;
     }
 };

@@ -35,6 +35,7 @@ class FBEvents
     #endif
         FBParser        fbP;
         FBEvents();
+        int             typeDelay = 0;
         int FBKeyPress(int key_code, int input_type, int input_source);
         int RunScript(std::string script);
         int ExecCommand(std::string command, std::string arg);

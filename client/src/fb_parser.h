@@ -15,11 +15,11 @@ class FBParser
 {
         void LoadKeymap();
         std::string keywords[FB_NUMBER_OF_KEYWORDS] = {"keypress", "keydown", "keyup", "sleep", "exec", "movemouse", "type", "typedelay"};
-        std::string fullScript;
         int CheckSubScript(std::string subString, int &lineNr, int &columnNr, std::string *errMsg);
     public:
         FBParser();
         std::map<std::string, int> keymap;
+        std::string fullScript;
         std::vector<std::string> subScripts;
         int LoadScript(std::string script);
         int CheckErrors(int &lineNr, int &columnNr, std::string &errMsg);

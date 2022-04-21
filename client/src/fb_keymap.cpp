@@ -36,6 +36,7 @@ void FBParser::LoadKeymap()
     keymap["[ENTER]"] = 0x0d;
     keymap["[BACKSPACE]"] = 0x08;
     keymap["[ESCAPE]"] = 0x1b;
+    keymap["[ESC]"] = 0x1b;
     keymap["[TAB]"] = 0x09;
     keymap["[DELETE]"] = 0x2e;
     keymap["[UP]"] = 0x26;

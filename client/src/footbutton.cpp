@@ -67,6 +67,8 @@ char FB::Read()
 
 FB::FB()
 {
+    dcbSerialParams = {sizeof(DCB)};
+    dcbSerialParams.DCBlength = sizeof(DCB);
     dcbSerialParams.BaudRate=CBR_9600;
     dcbSerialParams.ByteSize=8;
     dcbSerialParams.StopBits=ONESTOPBIT;

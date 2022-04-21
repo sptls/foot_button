@@ -28,76 +28,60 @@ std::string GetScriptFromFile(char* filepath)
 
 int main(int argc, char** argv)
 {
-    std::string         port;
-    std::ifstream       fPort;
     std::string         script;
     FB                  fb;
     FBParser            fbP;
     FBEvents            fbE;
 
-    fPort.open("last_working_port");
-    if(fPort.is_open())
-    {
-        getline(fPort, port);
-        fPort.close();
-    }
-    if(port == "")
-    {
-        if(argc < 2)
-        {
-            printf("Too few arguments\n");
-            return 1;
-        }
-        port = argv[1];
-        script = GetScriptFromFile(argv[2]);
-    }
-    else
-        script = GetScriptFromFile(argv[1]);
-
-    if(script == "")
-    {
-        printf("Script file %s is empty!\n", argv[2]);
-        return -1;
-    }
     int lineNr = 0, columnNr = 0, result = 0;
+    script = GetScriptFromFile(argv[2]);
     fbP.LoadScript(script);
-    int line = 0, row = 0;
     std::string errMsg;
-    if(fbP.CheckErrors(line, row, &errMsg) != 0)
+    if(fbP.CheckErrors(lineNr, columnNr, errMsg) != 0)
     {
-        printf("%i, %i: %s\n", line, row, errMsg.c_str());
+        printf("%i, %i: %s\n", lineNr, columnNr, errMsg.c_str());
         return 0;
     }
-    //testrun
-fbE.RunScript(script);
-return 0;
-    //test
 
     int openResult;
-    openResult = fb.OpenPort(port);
+    openResult = fb.OpenPort(argv[1]);
     if(openResult != 0)
     {
-        printf("Failed opening port %s\n", port.c_str());
-FB_SLEEP(5000);
+        printf("Failed opening port %s\n", argv[1]);
         return -1;
     }
-    else
-    {
-        std::ofstream f;
-        f.open("last_working_port");
-        f << port;
-        f.close();
-    }
 
-    printf("Opening port %s SUCCESS\n", port.c_str());
-    char out = '0';
+    printf("Opening port %s SUCCESS\n", argv[1]);
     fflush(stdout);
+    char out = '0';
+
+    std::ifstream fLoop;
+
+
+    int currentSubScript = 0;
+    char prevOut = '0';
     while(1)
     {
+        fLoop.open("end");
+        if(fLoop.is_open())
+        {
+            fLoop.close();
+            break;
+        }
         FB_SLEEP(1);
         out = fb.Read();
-        if(out == '1')
-            fbE.RunScript(script);
+        if(out != prevOut)
+        {
+            prevOut = out;
+            if(out == '1')
+            {
+                fbE.RunScript(fbP.subScripts[currentSubScript]);
+                currentSubScript++;
+                fflush(stdout);
+                if(currentSubScript >= lineNr)
+                    currentSubScript = 0;
+            }
+        }
     }
 
     fb.ClosePort();

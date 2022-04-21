@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     FBEvents            fbE;
 
     int lineNr = 0, columnNr = 0, result = 0;
-    script = GetScriptFromFile(argv[2]);
+    script = GetScriptFromFile(argv[1]);
     fbP.LoadScript(script);
     std::string errMsg;
     if(fbP.CheckErrors(lineNr, columnNr, errMsg) != 0)
@@ -44,14 +44,25 @@ int main(int argc, char** argv)
     }
 
     int openResult;
-    openResult = fb.OpenPort(argv[1]);
+    std::ifstream fPort;
+    fPort.open("port");
+    if(!fPort.is_open())
+    {
+        printf("Failed opening \"port\" file!\n");
+        return -1;
+    }
+    std::string port;
+    getline(fPort, port);
+    fPort.close();
+    openResult = fb.OpenPort(port);
     if(openResult != 0)
     {
-        printf("Failed opening port %s\n", argv[1]);
+        printf("Failed opening port %s\n", port);
         return -1;
     }
 
-    printf("Opening port %s SUCCESS\n", argv[1]);
+    printf("Opening port %s SUCCESS\n", port.c_str());
+    printf("Loaded script: %s\nContents:\n%s", argv[1], fbP.fullScript.c_str());
     fflush(stdout);
     char out = '0';
 

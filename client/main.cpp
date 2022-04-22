@@ -4,6 +4,23 @@
     #define FB_SLEEP(x) Sleep(x)
 #endif
 
+#ifdef FB_CLIENT_GUI
+
+#include "src/fb_events_g.h"
+#include "src/fb_gui.h"
+
+int main(int argc, char **argv)
+{
+    Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("sptls.footbutton.gui");
+    FBGui g;
+
+    return app->run(*g.windowMain);
+}
+
+#endif
+
+
+#ifdef FB_CLIENT_CLI
 
 #include <stdio.h>
 #include <string>
@@ -110,3 +127,5 @@ int main(int argc, char** argv)
 
     return 0;
 };
+
+#endif

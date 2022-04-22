@@ -6,6 +6,7 @@
     <property name="width-request">500</property>
     <property name="height-request">600</property>
     <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Footbutton</property>
     <property name="resizable">False</property>
     <child>
       <object class="GtkFixed">

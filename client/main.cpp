@@ -57,12 +57,12 @@ int main(int argc, char** argv)
     openResult = fb.OpenPort(port);
     if(openResult != 0)
     {
-        printf("Failed opening port %s\n", port);
+        printf("Opening port %s FAILED, exitting...\n", port);
         return -1;
     }
 
-    printf("Opening port %s SUCCESS\n", port.c_str());
-    printf("Loaded script: %s\nContents:\n/---------------------------------------------------------\\\n%s\n\\---------------------------------------------------------/\n", argv[1], fbP.fullScript.c_str());
+    printf("Opening port %s SUCCESS\n\n", port.c_str());
+    printf("---> Loaded script: %s\n\n\n/-----------------------Contents:-------------------------\\\n\n%s\n\\---------------------------------------------------------/\n\n", argv[1], fbP.fullScript.c_str());
     fflush(stdout);
     char out = '0';
 
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
                     printf("\b");
                     fflush(stdout);
                 }
-                scriptRunString = "Script run " + std::to_string(counter) + " times";
+                scriptRunString = "               ---[ Script run " + std::to_string(counter) + " times ]---";
                 printf("%s", scriptRunString.c_str());
                 fflush(stdout);
             }

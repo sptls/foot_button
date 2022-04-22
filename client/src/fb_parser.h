@@ -1,3 +1,6 @@
+/*
+* This class contains error checking
+*/
 #ifndef FB_PARSER_H_
 
 #include <string>

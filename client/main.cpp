@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     }
 
     printf("Opening port %s SUCCESS\n", port.c_str());
-    printf("Loaded script: %s\nContents:\n%s", argv[1], fbP.fullScript.c_str());
+    printf("Loaded script: %s\nContents:\n/---------------------------------------------------------\\\n%s\n\\---------------------------------------------------------/\n", argv[1], fbP.fullScript.c_str());
     fflush(stdout);
     char out = '0';
 
@@ -71,6 +71,8 @@ int main(int argc, char** argv)
 
     int currentSubScript = 0;
     char prevOut = '0';
+    std::string scriptRunString;
+    int counter = 0;
     while(1)
     {
         fLoop.open("end");
@@ -91,6 +93,15 @@ int main(int argc, char** argv)
                 fflush(stdout);
                 if(currentSubScript >= lineNr)
                     currentSubScript = 0;
+                counter++;
+                for(int i = 0; i < scriptRunString.length(); i++)
+                {
+                    printf("\b");
+                    fflush(stdout);
+                }
+                scriptRunString = "Script run " + std::to_string(counter) + " times";
+                printf("%s", scriptRunString.c_str());
+                fflush(stdout);
             }
         }
     }

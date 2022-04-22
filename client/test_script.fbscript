@@ -1,9 +1,1 @@
-{
-keydown [WIN]
-keypress D
-keyup [WIN]
-}
-{
-sleep 3000
-exec notepad.exe
-}
+movemouse -10 0

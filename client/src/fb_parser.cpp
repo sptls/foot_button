@@ -14,6 +14,15 @@ int FBParser::LoadScript(std::string script)
     return 0;
 };
 
+
+/*
+* Checks for subscripts inbetween { }, then runs 
+* proper error checking on those subscripts.
+* 
+* Return FB_OK, 0 on succes. Number of subscripts
+* is then writen to lineNr. Subscript strings are in
+* subScritps array.
+*/
 int FBParser::CheckErrors(int &lineNr, int &columnNr, std::string &errMsg)
 {
     std::vector<std::string> scriptLines;
@@ -272,7 +281,6 @@ int FBParser::CheckSubScript(std::string subScript, int &lineNr, int &columnNr, 
                     isRelative = true;
             }
 
-            printf("%i, %i\n", atoi(argList[0].c_str()), atoi(argList[1].c_str()));
             int x, y;
             x = atoi(argList[0].c_str());
             if(x < 0)

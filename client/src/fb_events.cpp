@@ -87,6 +87,32 @@ int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
     return 0;
 };
 
+int FBEvents::MoveMouse(std::string x, std::string y)
+{
+    bool bMoveAbsolute;
+    if(x[0] == '+' || x[0] == '-' || y[0] == '+' || y[0] == '-')
+        bMoveAbsolute = false;
+    else
+        bMoveAbsolute = true;
+
+    LONG x_pos = atol(x.c_str());
+    LONG y_pos = atol(y.c_str());
+    UINT result;
+    INPUT input;
+    ZeroMemory(&input, sizeof(input));
+    input.type = INPUT_MOUSE;
+    input.mi.dx = x_pos;
+    input.mi.dy = y_pos;
+    if(bMoveAbsolute)
+        input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+    else
+        input.mi.dwFlags = MOUSEEVENTF_MOVE;
+    
+    result = SendInput(1, &input, sizeof(INPUT));
+
+    return result == 0 ? FB_FAILED : FB_OK;
+};
+
 
 #endif
 
@@ -191,7 +217,7 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
     }
     if(command == "movemouse")
     {
-        return FB_OK;
+        return MoveMouse(argList[0], argList[1]);
     }
     if(command == "type")
     {

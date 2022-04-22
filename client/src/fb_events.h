@@ -35,6 +35,7 @@ class FBEvents
         FBParser        fbP;
         int             typeDelay = 0;
         int FBKeyPress(int key_code, int input_type, int input_source);
+        int MoveMouse(std::string x, std::string y);
         int ExecCommand(std::string command, std::string arg);
     public:
         FBEvents();

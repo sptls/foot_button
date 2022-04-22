@@ -9,6 +9,8 @@ class FBGui
         Glib::RefPtr<Gtk::Builder>      builder;
         Gtk::Window                     *windowMain;
 
+        Gtk::TextView                   *textViewScript;
+
         FBGui();
 };
 

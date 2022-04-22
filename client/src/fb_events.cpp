@@ -212,7 +212,43 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
             arg += " &";
             std::system(arg.c_str());
         #else
-        ShellExecuteA(NULL, NULL, arg.c_str(), NULL, NULL, SW_NORMAL);
+        std::string cmdName, cmdArgs;
+        bool bHasArgs = false;
+        for(int i = 0; i < arg.length(); i++)
+        {
+            if(arg[i] == ' ')
+                break;
+            else
+                cmdName.push_back(arg[i]);
+        }
+        if(cmdName.length() < arg.length())
+        {
+            bHasArgs = true;
+            for(int i = cmdName.length()+1; i < arg.length(); i++)
+                cmdArgs.push_back(arg[i]);
+        }
+        HINSTANCE result;
+        if(bHasArgs)
+            result = ShellExecuteA(NULL, NULL, cmdName.c_str(), cmdArgs.c_str(), NULL, SW_NORMAL);
+        else
+            result = ShellExecuteA(NULL, NULL, arg.c_str(), NULL, NULL, SW_NORMAL);
+        
+        switch((INT_PTR)(result))
+        {
+            case ERROR_FILE_NOT_FOUND:
+                printf("EXEC failed: file not found\n");
+                break;
+            case ERROR_PATH_NOT_FOUND:
+                printf("EXEC failed: path not found\n");
+                break;
+            case ERROR_BAD_FORMAT:
+                printf("EXEC failed: The .exe file is invalid (non-Win32 .exe or error in .exe image).\n");
+                break;
+            case SE_ERR_ACCESSDENIED:
+                printf("EXEC failed: The operating system denied access to the specified file.\n");
+                break;
+        }
+        return (INT_PTR)(result) > 32 ? FB_OK : FB_FAILED;
         #endif
     }
     if(command == "movemouse")

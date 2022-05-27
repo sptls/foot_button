@@ -28,6 +28,30 @@ int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
 BOOL CALLBACK GetProcessHandle(HWND hwnd, LPARAM lParam);
 std::string findWindowWithThisTitle;
 
+int FBEvents::FocusWindow(std::string windowTitle)
+{
+    //printf("FocusWindow: %s\n", windowTitle.c_str());
+    findWindowWithThisTitle = windowTitle;
+    EnumWindows(&GetProcessHandle, 1);
+    return FB_OK;
+};
+
+
+BOOL CALLBACK GetProcessHandle(HWND hwnd, LPARAM lParam)
+{
+    char buff[1024];
+    GetWindowTextA(hwnd, buff, 1024);
+    std::string tmp = buff;
+    if(tmp.find(findWindowWithThisTitle, 0) != std::string::npos)
+    {
+        //printf("Window: %s found as %s\nSwitching to %s\n", findWindowWithThisTitle.c_str(), buff, buff);
+        SwitchToThisWindow(hwnd, true);
+        SetForegroundWindow(hwnd);
+        return false;
+    }
+    return true;
+}
+
 FBEvents::FBEvents()
 {
 
@@ -296,26 +320,3 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
 
     return FB_OK;
 };
-
-int FBEvents::FocusWindow(std::string windowTitle)
-{
-    //printf("FocusWindow: %s\n", windowTitle.c_str());
-    findWindowWithThisTitle = windowTitle;
-    EnumWindows(&GetProcessHandle, 1);
-    return FB_OK;
-};
-
-
-BOOL CALLBACK GetProcessHandle(HWND hwnd, LPARAM lParam)
-{
-    char buff[1024];
-    GetWindowTextA(hwnd, buff, 1024);
-    std::string tmp = buff;
-    if(tmp.find(findWindowWithThisTitle, 0) != std::string::npos)
-    {
-        //printf("Window: %s found as %s\nSwitching to %s\n", findWindowWithThisTitle.c_str(), buff, buff);
-        SwitchToThisWindow(hwnd, true);
-        return false;
-    }
-    return true;
-}

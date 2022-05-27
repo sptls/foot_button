@@ -40,6 +40,7 @@ class FBEvents
     public:
         FBEvents();
         int RunScript(std::string script);
+        int FocusWindow(std::string windowTitle);
 };
 
 #endif

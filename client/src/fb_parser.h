@@ -12,12 +12,12 @@
 #define FB_OK 0
 #endif
 
-#define FB_NUMBER_OF_KEYWORDS 8
+#define FB_NUMBER_OF_KEYWORDS 9
 
 class FBParser
 {
         void LoadKeymap();
-        std::string keywords[FB_NUMBER_OF_KEYWORDS] = {"keypress", "keydown", "keyup", "sleep", "exec", "movemouse", "type", "typedelay"};
+        std::string keywords[FB_NUMBER_OF_KEYWORDS] = {"keypress", "keydown", "keyup", "sleep", "exec", "movemouse", "type", "typedelay", "focuswindow"};
         int CheckSubScript(std::string subString, int &lineNr, int &columnNr, std::string *errMsg);
     public:
         FBParser();

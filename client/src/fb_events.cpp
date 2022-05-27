@@ -54,14 +54,8 @@ int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
                 result = SendInput(1, &input, sizeof(INPUT));
                 break;
             case FB_TAP:
-                INPUT inputs[2] = {};
-                ZeroMemory(inputs, sizeof(inputs));
-                inputs[0].type = INPUT_KEYBOARD;
-                inputs[0].ki.wVk = key_code;
-                inputs[1].type = INPUT_KEYBOARD;
-                inputs[1].ki.wVk = key_code;
-                inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-                result = SendInput(1, inputs, sizeof(INPUT));
+                FBKeyPress(key_code, FB_PRESS, FB_INPUT_KB);
+                FBKeyPress(key_code, FB_RELEASE, FB_INPUT_KB);
                 break;
         }
     }

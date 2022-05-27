@@ -11,8 +11,8 @@
 
 int main(int argc, char **argv)
 {
-    Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("sptls.footbutton.gui");
     FBGui g;
+    Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("sptls.footbutton.gui");
 
     return app->run(*g.windowMain);
 }
@@ -49,15 +49,30 @@ int main(int argc, char** argv)
     FB                  fb;
     FBParser            fbP;
     FBEvents            fbE;
-
     int lineNr = 0, columnNr = 0, result = 0;
-    script = GetScriptFromFile(argv[1]);
-    fbP.LoadScript(script);
     std::string errMsg;
-    if(fbP.CheckErrors(lineNr, columnNr, errMsg) != 0)
+
+    if(!(strcmp(argv[1], "-runonce")))
     {
-        printf("%i, %i: %s\n", lineNr, columnNr, errMsg.c_str());
+        script = GetScriptFromFile(argv[2]);
+        fbP.LoadScript(script);
+        if(fbP.CheckErrors(lineNr, columnNr, errMsg) != 0)
+        {
+            printf("%i, %i: %s\n", lineNr, columnNr, errMsg.c_str());
+            return 0;
+        }
+        fbE.RunScript(fbP.subScripts[0]);
         return 0;
+    }
+    else
+    {
+        script = GetScriptFromFile(argv[1]);
+        fbP.LoadScript(script);
+        if(fbP.CheckErrors(lineNr, columnNr, errMsg) != 0)
+        {
+            printf("%i, %i: %s\n", lineNr, columnNr, errMsg.c_str());
+            return 0;
+        }
     }
 
     int openResult;

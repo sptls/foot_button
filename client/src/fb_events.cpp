@@ -299,7 +299,7 @@ int FBEvents::ExecCommand(std::string command, std::string arg)
 
 int FBEvents::FocusWindow(std::string windowTitle)
 {
-    printf("FocusWindow: %s\n", windowTitle.c_str());
+    //printf("FocusWindow: %s\n", windowTitle.c_str());
     findWindowWithThisTitle = windowTitle;
     EnumWindows(&GetProcessHandle, 1);
     return FB_OK;
@@ -313,7 +313,7 @@ BOOL CALLBACK GetProcessHandle(HWND hwnd, LPARAM lParam)
     std::string tmp = buff;
     if(tmp.find(findWindowWithThisTitle, 0) != std::string::npos)
     {
-        printf("Window: %s found as %s\nSwitching to %s\n", findWindowWithThisTitle.c_str(), buff, buff);
+        //printf("Window: %s found as %s\nSwitching to %s\n", findWindowWithThisTitle.c_str(), buff, buff);
         SwitchToThisWindow(hwnd, true);
         return false;
     }

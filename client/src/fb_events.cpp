@@ -52,6 +52,18 @@ BOOL CALLBACK GetProcessHandle(HWND hwnd, LPARAM lParam)
     return true;
 }
 
+int FBEvents::GetMousePosition(std::string &x, std::string &y)
+{
+    POINT pos;
+    if(GetCursorPos(&pos))
+    {
+        x = std::to_string(pos.x);
+        y = std::to_string(pos.y);
+        return FB_OK;
+    }
+    else return FB_FAILED;
+}
+
 FBEvents::FBEvents()
 {
 

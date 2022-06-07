@@ -52,6 +52,17 @@ int main(int argc, char** argv)
     int lineNr = 0, columnNr = 0, result = 0;
     std::string errMsg;
 
+    if(!(strcmp(argv[1], "-mpos")))
+    {
+        std::string x, y;
+        while(1)
+        {
+            fbE.GetMousePosition(x, y);
+            printf("x: %s, y: %s\n", x.c_str(), y.c_str());
+            fflush(stdout);
+        }
+    }
+
     if(!(strcmp(argv[1], "-runonce")))
     {
         script = GetScriptFromFile(argv[2]);

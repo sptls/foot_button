@@ -41,6 +41,7 @@ class FBEvents
         FBEvents();
         int RunScript(std::string script);
         int FocusWindow(std::string windowTitle);
+        int GetMousePosition(std::string &x, std::string &y);
 };
 
 #endif

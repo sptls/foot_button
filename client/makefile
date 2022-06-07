@@ -20,8 +20,8 @@ all: cli gui
 
 gui:
 ifeq ($(UNAME), Linux)
-	@echo -n "Linux... "
-	@${CXX} -o fb_cli *.cpp src/*.cpp ${LINUX_LIBS} ${LINUX_FLAGS} -D FB_CLIENT_CLI
+	@echo -n "Compiling Linux GUI client... "
+	@${CXX} -o fb_cli *.cpp src/*.cpp ${LINUX_LIBS} ${LINUX_FLAGS} -D FB_CLIENT_GUI
 else
 	@windres.exe res/icon.rc icon.o
 	@echo -n "Compiling Windows GUI client... "
@@ -34,8 +34,9 @@ endif
 
 cli:
 ifeq ($(UNAME), Linux)
-	@echo -n "Linux... "
-	@${CXX} -o fb_cli *.cpp src/*.cpp ${LINUX_LIBS} ${LINUX_FLAGS} -D FB_CLIENT_CLI
+	@echo -n "Compiling Linux CLI client... "
+	@${CXX} -o fb_cli ${CLI_SOURCE_FILES} ${LINUX_LIBS} ${LINUX_FLAGS} -D FB_CLIENT_CLI
+	@echo " done"
 else
 	@echo -n "Compiling Windows CLI client... "
 	@windres.exe res/icon.rc icon.o

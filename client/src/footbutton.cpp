@@ -61,6 +61,11 @@ char FB::Read()
     return out;
 };
 
+void FB::ClosePort()
+{
+    //do nothing
+};
+
 #else
 
 //Windows specific

@@ -20,6 +20,24 @@ int FBEvents::FBKeyPress(int key_code, int input_type, int input_source)
     return 0;
 };
 
+int FBEvents::GetMousePosition(std::string &x, std::string &y)
+{
+    //not ready
+    return FB_OK;
+}
+
+int FBEvents::FocusWindow(std::string windowTitle)
+{
+    //not ready
+    return FB_OK;
+}
+
+int FBEvents::MoveMouse(std::string x, std::string y)
+{
+    //not ready
+    return FB_OK;
+}
+
 #else
 
 //Windows stuff

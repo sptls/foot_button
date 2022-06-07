@@ -54,12 +54,25 @@ int main(int argc, char** argv)
 
     if(!(strcmp(argv[1], "-mpos")))
     {
-        std::string x, y;
+        size_t outLen = 0;
+        std::string x, y, prevX, prevY;
         while(1)
         {
             fbE.GetMousePosition(x, y);
-            printf("x: %s, y: %s\n", x.c_str(), y.c_str());
-            fflush(stdout);
+            if(x != prevX || y != prevY)
+            {
+                std::string out = "x: ";
+                out += x;
+                out += ", y: ";
+                out += y;
+                for(size_t i = 0; i < outLen; i++)
+                    printf("\b");
+                printf("%s", out.c_str());
+                outLen = out.length();
+                prevX = x;
+                prevY = y;
+                fflush(stdout);
+            }
         }
     }
 
